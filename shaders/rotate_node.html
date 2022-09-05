@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="imports/shader_node.css">
+    <script src="imports/truchet_image.js"></script>
+    <script src="imports/scrollable_input.js"></script>
+    <script src="imports/node_controls.js"></script>
+    <script src="imports/node_plot.js"></script>
+    <script src="imports/node_html_gen.js"></script>
+    <script src="imports/helpers.js"></script>
+
+    <title>Rotate Node</title>
+</head>
+
+<body>
+    <main id="centering_holder"></main>
+    
+    <script>
+
+        class RotateNode {
+
+            constructor(ctrl_group) {
+                this.center = ctrl_group.add_vector("Center", [0.5, 0.5], [0.02, 0.02]);
+                this.rotation_deg = ctrl_group.add_vector("Rotation", 45, 5);
+            }
+
+            from_uvs = (u, v) => {
+
+                // Calculate centered uvs
+                const delta_x = u - this.center.x;
+                const delta_y = v - this.center.y;
+
+                // Calculate rotation values
+                const rotation_rad = this.rotation_deg.x * PI / 180;
+                const sin_term = Math.sin(rotation_rad);
+                const cos_term = Math.cos(rotation_rad);
+
+                // Calculate rotated coords. (2D rotation)
+                const x_rot = delta_x * cos_term + delta_y * sin_term;
+                const y_rot = -delta_x * sin_term + delta_y * cos_term;
+
+                // Compute final outputs
+                const out_x = x_rot + this.center.x;
+                const out_y = y_rot + this.center.y;
+
+                return [out_x, out_y];
+            }
+        }
+
+        // Handle all GFX setup!
+        setup_shader_plot("Rotate (degrees)", RotateNode);
+    </script>
+
+</body>
+</html>

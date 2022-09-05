@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <title>Truchet Example</title>
+</head>
+
+<style>
+    body {
+        background-color: rgb(40,40,40);
+    }
+    .centered {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+
+
+<body>
+
+    <h1>Truchet</h1>
+
+    <div class="centered">
+            <canvas id="draw_canvas" class="plot_canvas"></canvas>
+    </div>
+
+
+<script>
+
+    // Global constants
+    const SIDE_LENGTH_PX = 320;
+    const NUM_TILES = 4;
+    const TILE_SIZE_PX = SIDE_LENGTH_PX / NUM_TILES;
+    const TILE_RADIUS = TILE_SIZE_PX / 2;
+    const PI = Math.PI;
+    const TWO_PI = 2.0 * PI;
+    const ONE_OVER_TWO_PI = 1.0 / TWO_PI;
+    const PI_OVER_TWO = PI / 2.0;
+
+    const ENABLE_GRID_VIS = false;
+    const LINE_WIDTH = 12;
+    const eps = 0.01;
+
+    const BG_COLOR = "rgb(70,40,80)";
+    const FG_COLOR = "rgb(145, 20, 85)";
+
+    const canvas = document.querySelector("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = SIDE_LENGTH_PX;
+    canvas.height = SIDE_LENGTH_PX;
+
+    // Color canvas background
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, SIDE_LENGTH_PX, SIDE_LENGTH_PX);
+
+    let draw_instructions = [];
+    for (let col = 0; col < NUM_TILES; col++) {
+        for (let row = 0; row < NUM_TILES; row++) {
+            
+            const random_flag = Math.random() > 0.5;
+            const new_instructions = [row, col, random_flag];
+            draw_instructions.push(new_instructions);
+        }
+    }
+
+
+    for (let blur_on of [true, false]) {
+
+        if (blur_on) {
+            ctx.filter = "blur(8px)";
+            ctx.strokeStyle = "rgba(0,0,0,0.8)";
+            ctx.lineWidth = LINE_WIDTH * 0.85;
+        } else {
+            ctx.filter = "none";
+            ctx.strokeStyle = FG_COLOR;
+            ctx.lineWidth = LINE_WIDTH;
+        }
+
+        for (let [row, col, flag] of draw_instructions) {
+    
+            const x1 = col * TILE_SIZE_PX;
+            const x2 = (1 + col) * TILE_SIZE_PX;
+            const y1 = row * TILE_SIZE_PX;
+            const y2 = (1 + row) * TILE_SIZE_PX;
+
+            if (ENABLE_GRID_VIS) {
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.rect(x1, y1, TILE_SIZE_PX, TILE_SIZE_PX);
+                ctx.strokeStyle = "rgb(40,40,40)";
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            let circ_top, circ_bot;
+            if (flag) {
+                circ_top = [x1, y1, TILE_RADIUS, 0-eps, PI_OVER_TWO+eps];
+                circ_bot = [x2, y2, TILE_RADIUS, PI-eps, 3 * PI_OVER_TWO + eps];
+            } else {
+                circ_top = [x2, y1, TILE_RADIUS, PI_OVER_TWO-eps, PI+eps];
+                circ_bot = [x1, y2, TILE_RADIUS, -PI_OVER_TWO-eps, 0+eps];
+            }
+
+            ctx.beginPath();
+            ctx.arc(...circ_top);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.arc(...circ_bot);
+            ctx.stroke();
+            ctx.closePath();
+    
+        }
+    }
+
+            
+            
+
+</script>
+
+</body>
+
+</html>

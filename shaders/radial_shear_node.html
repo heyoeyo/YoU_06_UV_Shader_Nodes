@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="imports/shader_node.css">
+    <script src="imports/truchet_image.js"></script>
+    <script src="imports/scrollable_input.js"></script>
+    <script src="imports/node_controls.js"></script>
+    <script src="imports/node_plot.js"></script>
+    <script src="imports/node_html_gen.js"></script>
+    <script src="imports/helpers.js"></script>
+
+    <title>Radial Shear Node</title>
+</head>
+
+<body>
+    <main id="centering_holder"></main>
+    
+    <script>
+
+        class RadialShearNode {
+
+            constructor(ctrl_group) {
+                this.center = ctrl_group.add_vector("Center", [0.5, 0.5], [0.02, 0.02]);
+                this.strength = ctrl_group.add_vector("Strength", [5, 5], [0.25, 0.25]);
+                this.offset = ctrl_group.add_vector("Offset", ["0.0", "0.0"], [0.05, 0.05]);
+            }
+
+            from_uvs = (u, v) => {
+
+                // Calculate centered uvs
+                const delta_x = u - this.center.x;
+                const delta_y = v - this.center.y;
+
+                // Calculate shear components
+                const length_squared = (delta_x * delta_x) + (delta_y * delta_y);
+                const x_shear = delta_y * (this.strength.x * length_squared);
+                const y_shear = -delta_x * (this.strength.y * length_squared);
+
+                // Compute final outputs
+                const x_out = u + x_shear + this.offset.x;
+                const y_out = v + y_shear + this.offset.y;
+
+                return [x_out, y_out];
+            }
+        }
+
+        // Handle all GFX setup!
+        setup_shader_plot("Radial Shear", RadialShearNode);
+    </script>
+
+</body>
+</html>

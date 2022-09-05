@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="imports/shader_node.css">
+    <script src="imports/truchet_image.js"></script>
+    <script src="imports/scrollable_input.js"></script>
+    <script src="imports/node_controls.js"></script>
+    <script src="imports/node_plot.js"></script>
+    <script src="imports/node_html_gen.js"></script>
+    <script src="imports/helpers.js"></script>
+
+    <title>Posterize Node</title>
+</head>
+
+<body>
+    <main id="centering_holder"></main>
+    
+    <script>
+
+        class PosterizeNode {
+
+            constructor(ctrl_group) {
+                this.steps = ctrl_group.add_vector("Steps", ["5", "5"]);
+            }
+
+            from_uvs = (u, v) => {
+
+                // Calculate quantized components
+                // -> Note: divide by zero is possible... this happens in Unity implementation as well
+                const x_poster = Math.floor(u * this.steps.x) / this.steps.x;
+                const y_poster = Math.floor(v * this.steps.y) / this.steps.y;
+
+                return [x_poster, y_poster];
+            }
+        }
+
+        // Handle all GFX setup!
+        setup_shader_plot("Posterize", PosterizeNode);
+    </script>
+
+</body>
+</html>

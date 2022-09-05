@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="imports/shader_node.css">
+    <script src="imports/truchet_image.js"></script>
+    <script src="imports/scrollable_input.js"></script>
+    <script src="imports/node_controls.js"></script>
+    <script src="imports/node_plot.js"></script>
+    <script src="imports/node_html_gen.js"></script>
+    <script src="imports/helpers.js"></script>
+
+    <title>Add Node</title>
+</head>
+
+<body>
+    <main id="centering_holder"></main>
+    
+    <script>
+
+        class AddNode {
+
+            constructor(ctrl_group) {
+                this.value = ctrl_group.add_vector("Value", ["0.0", "0.0"]);
+            }
+
+            from_uvs = (u, v) => {
+
+                // Calculate components separate, since we can't do vector operations in js!
+                const x_out = u + this.value.x;
+                const y_out = v + this.value.y;
+
+                return [x_out, y_out];
+            }
+        }
+
+        // Handle all GFX setup!
+        setup_shader_plot("Add", AddNode);
+    </script>
+
+</body>
+</html>
